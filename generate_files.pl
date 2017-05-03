@@ -10,7 +10,7 @@ use strict;
 #Data directory
 my $data_dir = "data/";
 
-#Input files: this files need to be downloaded from FigShare (https://figshare.com/s/84433e3f30d7b120fc24)
+#Input files: these files need to be downloaded from FigShare (https://figshare.com/s/84433e3f30d7b120fc24)
 # and stored in the data/datasets/ directory
 
 my $data1_human = "gnf";
@@ -58,9 +58,11 @@ my %pig = ($data1_pig => 1,$data2_pig => 1,$data3_pig => 1);
 # to identify which genes are expressed in the tissues of interest (more details in the README file)
 my $labels_file = $data_dir."dictionary/labels.tsv";
 my $bto_entities = $data_dir."dictionary/bto_entities.tsv";
+#my $bto_entities = $data_dir."dictionary/tissues_entities.tsv";
 my $bto_groups = $data_dir."dictionary/bto_groups.tsv";
+#my $bto_groups = $data_dir."dictionary/tissues_groups.tsv";
 
-#common tissues: Lists of common tissues 
+#common tissues: Lists of common tissues considered between transcriptomic datasets and the gold standard
 my %common_tissues_1 =("heart"=>1, "liver"=>1, "intestine"=>1, "nervous system"=>1, "kidney"=>1);
 my %common_tissues_2 =("heart"=>1, "liver"=>1, "muscle"=>1, "nervous system"=>1, "kidney"=>1);
 my %common_tissues_3 =("heart"=>1, "muscle"=>1, "intestine"=>1, "nervous system"=>1, "kidney"=>1);
@@ -112,7 +114,7 @@ my %goldstandards= ("human"=> $goldstandard_file_human,
 my $window_size = 100;
 #output files
 my $major_tissues_file = $data_dir."datasets_major_tissues.tsv"; #Specifies which datasets have which major tissues within the ones specified in the labels.tsv file
-my $consistency_file = "consistency_analysis.tsv"; #Gene-tissue associations per dataset per cutoff
+my $pairs_major_tissues_file = "pairs_major_tissues.tsv"; #Gene-tissue associations from all datasets for the 21 major tissues
 ##############
 
 #  Execution #
@@ -134,11 +136,11 @@ my ($goldstandard_labels_pig) = &convert_btos_labels($goldstandard_data_pig, $ch
 
 
 #dictionary with the protein-tissue pairs 
-my %consistency = ();
-&get_consistency_analyses_files($goldstandard_labels_human, \%consistency, $goldstandard_human);
-&get_consistency_analyses_files($goldstandard_labels_mouse, \%consistency, $goldstandard_mouse);
-&get_consistency_analyses_files($goldstandard_labels_rat, \%consistency, $goldstandard_rat);
-&get_consistency_analyses_files($goldstandard_labels_pig, \%consistency, $goldstandard_pig);
+my %data_major_tissues = ();
+&combine_data_major_tissues($goldstandard_labels_human, \%data_major_tissues, $goldstandard_human);
+&combine_data_major_tissues($goldstandard_labels_mouse, \%data_major_tissues, $goldstandard_mouse);
+&combine_data_major_tissues($goldstandard_labels_rat, \%data_major_tissues, $goldstandard_rat);
+&combine_data_major_tissues($goldstandard_labels_pig, \%data_major_tissues, $goldstandard_pig);
 
 #dictionary with all the data available
 my %dataset_scored_pairs = ();
@@ -152,7 +154,7 @@ foreach my $dataset_name (keys %options){
 	if (defined $common_tissues_hash{$dataset_name}){
 		&format_score_pairs($dataset_labels, $common_tissues_hash{$dataset_name}, \%dataset_scored_pairs, $dataset_name);
 	}
-	&get_consistency_analyses_files($dataset_labels, \%consistency, $dataset_name);
+	&combine_data_major_tissues($dataset_labels, \%data_major_tissues, $dataset_name);
 
 }
 
@@ -204,8 +206,8 @@ foreach my $dataset_name (keys %dataset_scored_pairs){
 
 #Print out the file with: Dataset Tissue NumberProteins
 &print_2dim(\%major_tissues, $major_tissues_file);
-#Print out consistency files
-&print_3dim(\%consistency, $consistency_file, $data_dir);
+#Print out the file with gene-tissue pairs
+&print_3dim(\%data_major_tissues, $pairs_major_tissues_file, $data_dir);
 
 ##############
 #  Functions #
@@ -224,21 +226,20 @@ sub print_2dim(){
 }
 
 sub print_3dim(){
-	my ($data) = $_[0];
-	my ($output_file) = $_[1];
-	my ($data_dir) = $_[2];
-	
-	foreach my $level (keys %{$data}){
-		my $full_path = $data_dir.$level."_".$output_file;
-		open(OUT,">$full_path") or die "Unable to open the Output file $full_path\n";
-		foreach my $dataset (keys %{${$data}{$level}}){
-			foreach my $id (keys %{${$data}{$level}{$dataset}}){
-				print OUT $dataset."\t".${$data}{$level}{$dataset}{$id}."\t".$id."\n";
-			}
-		}
-	}
-	close(OUT);
+    my ($data) = $_[0];
+    my ($output_file) = $_[1];
+    my ($data_dir) = $_[2];
+    my $full_path = $data_dir.$output_file;
+    open(OUT,">$full_path") or die "Unable to open the Output file $full_path\n";
+    foreach my $dataset (keys %{$data}){
+        foreach my $id (keys %{${$data}{$dataset}}){
+            print OUT $dataset."\t".${$data}{$dataset}{$id}."\t".$id."\n";
+        }
+    }
+    
+    close(OUT);
 }
+
 
 sub parse_labels_file(){
     print "- Parsing the Labels file $labels_file with the tissues to be studied\n";
@@ -458,7 +459,7 @@ sub convert_btos_labels(){
 }
 
 sub format_score_pairs(){
-    	my ($dataset_labels) = $_[0];
+    my ($dataset_labels) = $_[0];
 	my ($common_tissues) = $_[1];
 	my ($score_pairs) = $_[2];
 	my ($dataset_name) = $_[3];
@@ -490,17 +491,18 @@ sub filter_common_tissues(){
 	return \%filtered;
 }
 
-sub get_consistency_analyses_files(){
+sub combine_data_major_tissues(){
 	my ($dataset_labels) = $_[0];
-	my ($consistency) = $_[1];
+	my ($data_major_tissues) = $_[1];
 	my ($dataset) = $_[2];
 
 	foreach my $ensp (keys %{$dataset_labels}){
 		foreach my $label (keys %{${$dataset_labels}{$ensp}}){
 			my ($score, $stars) = split("\t",${$dataset_labels}{$ensp}{$label});
 			if ($stars){
-				${$consistency}{"all"}{$dataset}{$label."\t".$ensp} = ${$dataset_labels}{$ensp}{$label};
-			}
+                #${$data_major_tissues}{"all"}{$dataset}{$label."\t".$ensp} = ${$dataset_labels}{$ensp}{$label};
+                ${$data_major_tissues}{$dataset}{$label."\t".$ensp} = ${$dataset_labels}{$ensp}{$label};
+            }
 		}
 	}
 }
@@ -509,12 +511,12 @@ sub get_consistency_analyses_files(){
 #Calculate the fold enrichment for each dataset using a moving average window over the score
 #This allowed making the datasets comparable
 sub calculate_fold_enrichment(){
-    	my ($dataset) = $_[0];
-    	my ($gold) = $_[1];
-    	my ($output_file) = $_[2];
-    	my ($window_size) = $_[3];
-	my ($output_file_full) = $_[4];	
-	my ($output_file_roc) = $_[5];	
+    my ($dataset) = $_[0];
+    my ($gold) = $_[1];
+    my ($output_file) = $_[2];
+    my ($window_size) = $_[3];
+    my ($output_file_full) = $_[4];
+    my ($output_file_roc) = $_[5];
     	
 	print "- Calculating precision at the level of score for the dataset, $output_file\n";
     	my @pos_neg_array = ();
@@ -540,11 +542,11 @@ sub calculate_fold_enrichment(){
 				}
 	    		}
 		}
-    	}
-    	print "- The dataset has $dataset_total_pairs pairs in total\n";
+    }
+    print "- The dataset has $dataset_total_pairs pairs in total\n";
     	
 	
-    	#calculate gold_standard pairs and proteins
+    #calculate gold_standard pairs and proteins
 	my $gold_num_pairs = 0;
  	my %gold_tissues = ();
     	foreach my $ensp (keys %gold_valid_prots){

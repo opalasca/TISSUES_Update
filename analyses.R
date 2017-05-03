@@ -11,7 +11,8 @@ if("VennDiagram" %in% rownames(installed.packages()) == FALSE) {install.packages
 if("gridBase" %in% rownames(installed.packages()) == FALSE) {install.packages("gridBase")}
 if("lattice" %in% rownames(installed.packages()) == FALSE) {install.packages("lattice")}
 if("gplots" %in% rownames(installed.packages()) == FALSE) {install.packages("gplot")}
-#if("cowplot" %in% rownames(installed.packages()) == FALSE) {install.packages("cowplot")}
+if("lattice" %in% rownames(installed.packages()) == FALSE) {install.packages("lattice")}
+if("pracma" %in% rownames(installed.packages()) == FALSE) {install.packages("pracma")}
 
 #Load libraries
 require(RColorBrewer)

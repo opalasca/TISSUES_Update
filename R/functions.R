@@ -7,7 +7,9 @@ get_colors<-function(is_label = F){
     }
   #assign colors to each dataset
   col<-c("#3cb371","#9acd32", "#2e8b57","#006400","#556b2f", "#4169e1","#4682b4","#1e90ff","#191970","#cd853f","#daa520","#a0522d","#ffc0cb","#ffa07a","#db7093","white","white","white","white" )
-  names(col) <- ds  
+#            exon      gnf      rna      hparna                "m_gnf", "m_gnfv3","mencode", "m_mit", "r_array", r_mit   rat_bmap    p_array    p_aarhus    p_wur
+            
+   names(col) <- ds  
   return(col)
 }
 
@@ -44,31 +46,39 @@ calc_pairwise_corr <- function(A, B){
 # Get lower triangle of the correlation matrix
 get_lower_tri<-function(cormat){
   cormat[lower.tri(cormat)] <- NA
+  diag(cormat)<-NA
   return(cormat)
 }
 
 # Get upper triangle of the correlation matrix
 get_upper_tri <- function(cormat){
   cormat[upper.tri(cormat)]<- NA
+  diag(cormat)<-NA
   return(cormat)
 }
 
 #adapted from http://www.sthda.com/english/wiki/ggplot2-quick-correlation-matrix-heatmap-r-software-and-data-visualization
 draw_heatmap<-function(mat_data,title,output_file,min_val,w,h,bw,bh){
   #h=1000;w=1000
+  if (min_val<0){
+    col=c("blue4","whitesmoke","brown3")
+  }
+  else{
+    col=c("whitesmoke","brown3")
+  } 
   upper_tri <- get_upper_tri(mat_data)
   melted_mat_data<-melt(upper_tri,na.rm=TRUE)
   low<-min(melted_mat_data[,3])
   print(low)
-  if (min_val!=0){
+  #if (min_val!=0){
     low=min_val
-  } 
+  #} 
   mid<-low+(1-low)/2
   plot <- ggplot(melted_mat_data, aes(Var1,ordered(Var2,levels=rev(sort(unique(Var2)))))) +   
     geom_tile(aes(fill = value))+
     labs(caption=title) + 
     theme(plot.caption = element_text(hjust=0.5, face="bold", size=rel(1.2)))+
-    scale_fill_gradientn(colours=c("whitesmoke","blue4","brown3"), 
+    scale_fill_gradientn(colours=col, 
                          limits = c(low,1),
                          #space = "Lab", 
                          name="Pearson's\nCorrelation") +
@@ -135,4 +145,13 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
   }
 }
 
-
+#http://stackoverflow.com/questions/41127054/rotate-a-matrix-45-degrees-and-visualize-it-using-ggplot
+rotate <- function(df, degree) {
+  dfr <- df
+  degree <- pi * degree / 180
+  l <- sqrt(df$start1^2 + df$start2^2)
+  teta <- atan(df$start2 / df$start1)
+  dfr$start1 <- round(l * cos(teta - degree))
+  dfr$start2 <- round(l * sin(teta - degree))
+  return(dfr)
+}

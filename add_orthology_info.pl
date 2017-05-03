@@ -102,9 +102,9 @@ close INR;
 
 
 
-open IN, "< data/all_consistency_analysis.tsv";
-open OUT, "> data/consistency_analysis_orthologs.tsv";
-open OUTF, "> data/consistency_analysis_orthologs_filtered.tsv";
+open IN, "< data/pairs_major_tissues.tsv";
+open OUT, "> data/pairs_major_tissues_orthologs.tsv";
+open OUTF, "> data/pairs_major_tissues_orthologs_filtered.tsv";
 
 
 while (<IN>) {

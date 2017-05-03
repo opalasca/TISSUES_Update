@@ -1,4 +1,4 @@
-TISSUES: An integrative web resource on mammalian tissue expression ![alt text](http://jensenlab.org/images/tissues_icon.png "TISSUES database")
+TISSUES 2.0: An integrative web resource on mammalian tissue expression ![alt text]
 ==============
 
 Code to reproduce the fold enrichment analyses and figures from the article
@@ -7,8 +7,8 @@ Code to reproduce the fold enrichment analyses and figures from the article
 - README.md --> *Markdown file*
 - makefile  -->	*main script*
 - generate\_files.pl --> *script to generate the necessary files. This script uses the original datasets files (with no filter for unconfident gene-tissue associations)*
-- update\_consistency\_with\_orthologs.pl --> *script to generate files containing scored gene-tissue pairs and 1:1 orthologs with the other three organisms, if these exist, for each gene.*
-- analyses.R --> *script orchestrating the genera:wqtion of the figures*
+- add\_orthology\_info.pl --> *script to generate files containing scored gene-tissue pairs and 1:1 orthologs with the other three organisms, if these exist, for each gene.*
+- analyses.R --> *script orchestrating the generation of the figures*
 - R/ --> *All the scripts necessary to reproduce the figures*
     - summary\_figure\_drawing.R --> *Initial figure with the tissues covered by each dataset*
     - fold\_enrichment\_analysis\_per\_dataset.R --> *Generates the fold-enrichment plots for each dataset*
@@ -38,16 +38,17 @@ Code to reproduce the fold enrichment analyses and figures from the article
             options(repos=r)})
      ```
 
-3. Execute the makefile script from the command line:
+3. Download the datasets from from https://figshare.com/articles/datasets/4640734 and place them in the data/datasets folder 
+4. Execute the makefile script from the command line:
   `> make`
-4. All the files will be generated in the data folder
-5. All the figures from the analyses will be created in the figures/ folder
+5. All the files will be generated in the data folder
+6. All the figures from the analyses will be created in the figures/ folder
 
 **Generated files**
 
 ./data/
-- Fold enrichment analyses result files: *DATASET*\_*GOLDSTANDARD*\_fold\_enrichment\_analysis.tsv (goldstandards: UniProt-KB and mRNA reference set)
-- Consistency analyses result files: all\_consistency\_analysis.tsv 
+- Fold enrichment analyses result files: *DATASET*\_uniprot\_fold\_enrichment\_analysis.tsv
+- Scored gene-tissue pairs for the 21 major tissues: pairs\_major\_tissues.tsv 
 ./figures/
 - Fold enrichment plots: datasets\_fold\_enrichment.png
 - Score calibration plot: datasets_score_calibration.png
@@ -56,4 +57,3 @@ Code to reproduce the fold enrichment analyses and figures from the article
 
 - Perl
 - R
-- curl

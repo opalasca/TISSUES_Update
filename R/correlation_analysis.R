@@ -134,9 +134,9 @@ calc_correlation_tissues <- function(datasets, dataset_names, names, names_conca
 
 
 #Read data
-all_data<-get_data("consistency_analysis_orthologs_filtered")
-#all_data<-get_data("consistency_analysis_orthologs")
-min_val=0.26
+all_data<-get_data("pairs_major_tissues_orthologs_filtered")
+#all_data<-get_data("pairs_major_tissues_orthologs")
+min_val=0
 protein_tissues<-all_data
 
 #datasets by organism/technology  
@@ -201,7 +201,7 @@ for (i in 1:length(datasets)){
   #datasets[[i]]<-filter_dataset_tissue(protein_tissues,dataset_names[[i]],c(),not_in=TRUE,c(2,3,4,5,6,7,8,9))
   datasets[[i]]<-filter_dataset(protein_tissues,dataset_names[[i]])
 }
-p<-calc_correlation_common_btw_pairs(datasets, dataset_names, names,"","",500,500,1.5,10)
+p<-calc_correlation_common_btw_pairs(datasets, dataset_names, names,"","",500,500,3,10)
 
 ###############################################################################
 #         Correlation across different tissues within and between datasets         #
