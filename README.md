@@ -1,4 +1,4 @@
-TISSUES 2.0: An integrative web resource on mammalian tissue expression ![alt text]
+TISSUES 2.0: An integrative web resource on mammalian tissue expression
 ==============
 
 Code to reproduce the fold enrichment analyses and figures from the article
@@ -50,8 +50,10 @@ Code to reproduce the fold enrichment analyses and figures from the article
 - Fold enrichment analyses result files: *DATASET*\_uniprot\_fold\_enrichment\_analysis.tsv
 - Scored gene-tissue pairs for the 21 major tissues: pairs\_major\_tissues.tsv 
 ./figures/
+- Summary of covered tissues: Summary\_figure\_tissues.png
 - Fold enrichment plots: datasets\_fold\_enrichment.png
 - Score calibration plot: datasets_score_calibration.png
+- Heatmaps with Pearson's correlation scores between pairs of datasets 
 
 **Requirements**
 
