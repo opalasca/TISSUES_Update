@@ -1,6 +1,6 @@
 plot_multi_fold_enrichment<-function(data,out_file,title,labels){
   png(out_file,height=1000,width=900)
-  g <- gridExtra::borderGrob(type=9, colour="black", lwd=2)
+  #g <- gridExtra::borderGrob(type=9, colour="black", lwd=2)
   plot<- ggplot(data, aes(mean_score, fold_enrichment,color=set)) + 
     colScale+
     facet_grid(set~.,space="free",scales="free_x") +
@@ -12,7 +12,7 @@ plot_multi_fold_enrichment<-function(data,out_file,title,labels){
           panel.grid.minor = element_blank(),
           panel.border = element_blank(),
           panel.background = element_blank())+
-    annotation_custom(g)+
+    #annotation_custom(g)+
     scale_x_log10(breaks=c(0.1,1,10, 100,1000, 5000))+
     annotation_logticks(sides="b", short = unit(0.02, "cm"), 
                         mid = unit(0.05, "cm"), long = unit(0.1, "cm"),color="black")+
@@ -44,7 +44,7 @@ plot_multi_fold_enrichment<-function(data,out_file,title,labels){
 
 get_mRNA_data<-function(levels,labels){
   dataset<- levels[1]
-  file<-paste(dataset,"uniprot_fold_enrichment_analysis.tsv",sep="_")
+  file<-paste(dataset,"uniprot_orth_fold_enrichment_analysis.tsv",sep="_")
   
   all_data<-read.csv(file=file,header=FALSE,sep="\t")
   names(all_data)<-c("mean_stars","fold_enrichment","mean_score")

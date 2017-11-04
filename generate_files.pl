@@ -7,6 +7,7 @@
 #!/usr/bin/ perl
 use warnings;
 use strict;
+use Data::Dumper;
 #Data directory
 my $data_dir = "data/";
 
@@ -18,49 +19,57 @@ my $data2_human = "exon";
 my $data3_human = "hpa_rna";
 my $data4_human = "rna";
 my $data5_human = "tm";
+my $data6_human = "human_text_mining";
 
 my $data1_mouse = "mouse_gnf";
 my $data2_mouse = "mouse_gnfv3";
 my $data3_mouse = "mouse_rnaseq_encode";
+my $data3_mouse_bis = "mouse_rnaseq_processed_rnaseq_encode_tpm";
 my $data4_mouse = "mouse_rnaseq_mit";
+my $data5_mouse = "mouse_text_mining";
 
 my $data1_rat = "rat_array";
 my $data2_rat = "rat_rnaseq_mit";
 my $data3_rat = "rat_rnaseq_bodymap";
+my $data4_rat = "rat_text_mining";
 
 my $data1_pig = "pig_array";
 my $data2_pig = "pig_rnaseq_aarhus";
 my $data3_pig = "pig_rnaseq_wur";
+my $data4_pig = "pig_text_mining";
 
 my %options = ($data1_human => $data_dir."datasets/".$data1_human.".tsv",
 		$data2_human => $data_dir."datasets/".$data2_human.".tsv",
 		$data3_human => $data_dir."datasets/".$data3_human.".tsv",
 		$data4_human => $data_dir."datasets/rna_seq.tsv",
 		$data5_human => $data_dir."datasets/text_mining.tsv",
+		$data6_human => $data_dir."datasets/".$data6_human.".tsv",
 		$data1_mouse => $data_dir."datasets/".$data1_mouse.".tsv",
 		$data2_mouse => $data_dir."datasets/".$data2_mouse.".tsv",
 		$data3_mouse => $data_dir."datasets/".$data3_mouse.".tsv",
+		$data3_mouse_bis => $data_dir."datasets/".$data3_mouse_bis.".tsv",
 		$data4_mouse => $data_dir."datasets/".$data4_mouse.".tsv",
+		$data5_mouse => $data_dir."datasets/".$data5_mouse.".tsv",
 		$data1_rat => $data_dir."datasets/".$data1_rat.".tsv",
 		$data2_rat => $data_dir."datasets/".$data2_rat.".tsv",
 		$data3_rat => $data_dir."datasets/".$data3_rat.".tsv",
+		$data4_rat => $data_dir."datasets/".$data4_rat.".tsv",
 		$data1_pig => $data_dir."datasets/".$data1_pig.".tsv",
 		$data2_pig => $data_dir."datasets/".$data2_pig.".tsv",
-		$data3_pig => $data_dir."datasets/".$data3_pig.".tsv"
+		$data3_pig => $data_dir."datasets/".$data3_pig.".tsv",
+		$data4_pig => $data_dir."datasets/".$data4_pig.".tsv"
 	);
 
-my %human = ($data1_human=> 1,$data2_human=> 1,$data3_human=> 1, $data4_human=> 1,$data5_human=> 1);
-my %mouse = ($data1_mouse => 1,$data2_mouse => 1,$data3_mouse => 1,$data4_mouse => 1);
-my %rat = ($data1_rat => 1,$data2_rat => 1,$data3_rat => 1);
-my %pig = ($data1_pig => 1,$data2_pig => 1,$data3_pig => 1);
+my %human = ($data1_human=> 1,$data2_human=> 1,$data3_human=> 1, $data4_human=> 1,$data5_human=> 1,$data6_human=> 1);
+my %mouse = ($data1_mouse => 1,$data2_mouse => 1,$data3_mouse => 1,$data3_mouse_bis => 1,$data4_mouse => 1,$data5_mouse => 1);
+my %rat = ($data1_rat => 1,$data2_rat => 1,$data3_rat => 1,$data4_rat => 1);
+my %pig = ($data1_pig => 1,$data2_pig => 1,$data3_pig => 1,$data4_pig => 1 );
 
 #dictionary files: These files are used for backtracking tissues to their respective parent tissues
 # to identify which genes are expressed in the tissues of interest (more details in the README file)
 my $labels_file = $data_dir."dictionary/labels.tsv";
-my $bto_entities = $data_dir."dictionary/bto_entities.tsv";
-#my $bto_entities = $data_dir."dictionary/tissues_entities.tsv";
-my $bto_groups = $data_dir."dictionary/bto_groups.tsv";
-#my $bto_groups = $data_dir."dictionary/tissues_groups.tsv";
+my $bto_entities = $data_dir."dictionary/tissues_entities.tsv";
+my $bto_groups = $data_dir."dictionary/tissues_groups.tsv";
 
 #common tissues: Lists of common tissues considered between transcriptomic datasets and the gold standard
 my %common_tissues_1 =("heart"=>1, "liver"=>1, "intestine"=>1, "nervous system"=>1, "kidney"=>1);
@@ -73,41 +82,36 @@ my %common_tissues_hash = ($data1_human => \%common_tissues_1,
 		$data3_human => \%common_tissues_1,
 		$data4_human => \%common_tissues_1,
 		$data5_human => \%common_tissues_1,
+		$data6_human => \%common_tissues_1,
 		$data1_mouse => \%common_tissues_1,
 		$data2_mouse => \%common_tissues_1,
 		$data3_mouse => \%common_tissues_1,
+		$data3_mouse_bis => \%common_tissues_1,
 		$data4_mouse => \%common_tissues_1,
+		$data5_mouse => \%common_tissues_1,
 		$data1_rat => \%common_tissues_3,
 		$data2_rat => \%common_tissues_1,
 		$data3_rat => \%common_tissues_2,
+		$data4_rat => \%common_tissues_1,
 		$data1_pig => \%common_tissues_1,
 		$data2_pig => \%common_tissues_2,
-		$data3_pig => \%common_tissues_4
+		$data3_pig => \%common_tissues_4,
+		$data4_pig => \%common_tissues_1
 	);
 
 #Get the dataset name we are going to analyze   
 my $dataset_file = "";
 
 #Gold standards
-my $uniprot_file_human = "datasets/uniprot.tsv";
-my $uniprot_file_mouse = "datasets/uniprot_mouse_human_orthology.tsv";
-my $uniprot_file_rat = "datasets/uniprot_rat_human_orthology.tsv";
-my $uniprot_file_pig = "datasets/uniprot_pig_human_orthology.tsv";
-
-my $goldstandard_human = "uniprot_human";
-my $goldstandard_mouse = "uniprot_mouse_orth";
-my $goldstandard_rat = "uniprot_rat_orth";
-my $goldstandard_pig = "uniprot_pig_orth";
-
-my $goldstandard_file_human = $data_dir.$uniprot_file_human;
-my $goldstandard_file_mouse = $data_dir.$uniprot_file_mouse;
-my $goldstandard_file_rat = $data_dir.$uniprot_file_rat;
-my $goldstandard_file_pig = $data_dir.$uniprot_file_pig;
-
-my %goldstandards= ("human"=> $goldstandard_file_human,
-			"mouse"=> $goldstandard_file_mouse, 
-			"rat"=> $goldstandard_file_rat, 
-			"pig"=> $goldstandard_file_pig); 
+my %goldstandards = ("human" => {"uniprot" => $data_dir."datasets/human_knowledge.tsv",
+				"uniprot_orth" => $data_dir."datasets/uniprot_human_reduced_orthology_10116.tsv"},
+		"mouse" => {"uniprot" => $data_dir."datasets/mouse_knowledge.tsv",
+				"uniprot_orth" => $data_dir."datasets/uniprot_orthology_10090.tsv"},
+		"rat" => {"uniprot" => $data_dir."datasets/rat_knowledge.tsv",
+				"uniprot_orth" => $data_dir."datasets/uniprot_orthology_10116.tsv"},
+		"pig" => {"uniprot" => $data_dir."datasets/pig_knowledge.tsv",
+				"uniprot_orth" => $data_dir."datasets/uniprot_orthology_9823.tsv"}
+	);
 
 
 #sliding window
@@ -127,20 +131,26 @@ my ($child_labels_hash) = &get_child_label($labels,$entities,$groups);
 #dictionary with the number of proteins per tissue
 my %major_tissues = ();
 
-my ($goldstandard_data_human,$gold_btos_human,$goldstandard_data_mouse,$gold_btos_mouse,$goldstandard_data_rat,$gold_btos_rat,$goldstandard_data_pig,$gold_btos_pig) = &parse_goldstandard_file();
-
-my ($goldstandard_labels_human) = &convert_btos_labels($goldstandard_data_human, $child_labels_hash, \%major_tissues, $goldstandard_human);
-my ($goldstandard_labels_mouse) = &convert_btos_labels($goldstandard_data_mouse, $child_labels_hash, \%major_tissues, $goldstandard_mouse);
-my ($goldstandard_labels_rat) = &convert_btos_labels($goldstandard_data_rat, $child_labels_hash, \%major_tissues, $goldstandard_rat);
-my ($goldstandard_labels_pig) = &convert_btos_labels($goldstandard_data_pig, $child_labels_hash, \%major_tissues, $goldstandard_pig);
-
-
+my %goldstandard_data = ();
+my %gold_btos = ();
+my %goldstandard_labels = ();
 #dictionary with the protein-tissue pairs 
 my %data_major_tissues = ();
-&combine_data_major_tissues($goldstandard_labels_human, \%data_major_tissues, $goldstandard_human);
-&combine_data_major_tissues($goldstandard_labels_mouse, \%data_major_tissues, $goldstandard_mouse);
-&combine_data_major_tissues($goldstandard_labels_rat, \%data_major_tissues, $goldstandard_rat);
-&combine_data_major_tissues($goldstandard_labels_pig, \%data_major_tissues, $goldstandard_pig);
+
+&parse_goldstandard_file(\%goldstandards,\%goldstandard_data,\%gold_btos);
+
+#print Dumper($child_labels_hash);
+
+foreach my $org (keys %goldstandards){
+	#print "$org  ";
+	foreach my $gold (keys %{$goldstandards{$org}}){
+		#print "$gold  ";
+		#print Dumper($goldstandard_data{$org}{$gold});
+		my ($goldstd_labels) = &convert_btos_labels(\%{$goldstandard_data{$org}{$gold}}, $child_labels_hash, \%major_tissues, $gold);
+		$goldstandard_labels{$org}{$gold}=$goldstd_labels;
+		&combine_data_major_tissues($goldstd_labels, \%data_major_tissues, $gold);
+	}
+}	
 
 #dictionary with all the data available
 my %dataset_scored_pairs = ();
@@ -158,16 +168,11 @@ foreach my $dataset_name (keys %options){
 
 }
 
-my %gold_standards_human = ("uniprot"=> $goldstandard_human); 
-my %gold_standards_mouse = ("uniprot"=> $goldstandard_mouse);
-my %gold_standards_rat = ("uniprot"=> $goldstandard_rat);
-my %gold_standards_pig = ("uniprot"=> $goldstandard_pig); 
-
 #calculate fold enrichment for the different datasets
 foreach my $dataset_name (keys %dataset_scored_pairs){
 	if (defined $human{$dataset_name}){	
-		foreach my $goldstandard (keys %gold_standards_human){
-			my ($goldstandard_filtered) = &filter_common_tissues($goldstandard_labels_human, $common_tissues_hash{$dataset_name});
+		foreach my $goldstandard (keys $goldstandards{"human"}){
+			my ($goldstandard_filtered) = &filter_common_tissues($goldstandard_labels{"human"}{$goldstandard}, $common_tissues_hash{$dataset_name});
 			my $output_file = $data_dir."$dataset_name"."_$goldstandard"."_fold_enrichment_analysis.tsv";
 			my $output_file_full = $data_dir."$dataset_name"."_$goldstandard"."_fold_enrichment_analysis_full.tsv";	
 			my $output_file_roc = $data_dir."$dataset_name"."_$goldstandard"."_fold_enrichment_analysis_roc.tsv";	
@@ -175,8 +180,8 @@ foreach my $dataset_name (keys %dataset_scored_pairs){
 		}
 	}
 	if (defined $mouse{$dataset_name}){	
-		foreach my $goldstandard (keys %gold_standards_mouse){
-			my ($goldstandard_filtered) = &filter_common_tissues($goldstandard_labels_mouse, $common_tissues_hash{$dataset_name});
+		foreach my $goldstandard (keys $goldstandards{"mouse"}){
+			my ($goldstandard_filtered) = &filter_common_tissues($goldstandard_labels{"mouse"}{$goldstandard}, $common_tissues_hash{$dataset_name});
 			my $output_file = $data_dir."$dataset_name"."_$goldstandard"."_fold_enrichment_analysis.tsv";
 			my $output_file_full = $data_dir."$dataset_name"."_$goldstandard"."_fold_enrichment_analysis_full.tsv";		
 			my $output_file_roc = $data_dir."$dataset_name"."_$goldstandard"."_fold_enrichment_analysis_roc.tsv";
@@ -184,8 +189,8 @@ foreach my $dataset_name (keys %dataset_scored_pairs){
 		}
 	}
 	if (defined $rat{$dataset_name}){	
-		foreach my $goldstandard (keys %gold_standards_rat){
-			my ($goldstandard_filtered) = &filter_common_tissues($goldstandard_labels_rat, $common_tissues_hash{$dataset_name});
+		foreach my $goldstandard (keys $goldstandards{"rat"}){
+			my ($goldstandard_filtered) = &filter_common_tissues($goldstandard_labels{"rat"}{$goldstandard}, $common_tissues_hash{$dataset_name});
 			my $output_file = $data_dir."$dataset_name"."_$goldstandard"."_fold_enrichment_analysis.tsv";
 			my $output_file_full = $data_dir."$dataset_name"."_$goldstandard"."_fold_enrichment_analysis_full.tsv";	
 			my $output_file_roc = $data_dir."$dataset_name"."_$goldstandard"."_fold_enrichment_analysis_roc.tsv";	
@@ -193,8 +198,8 @@ foreach my $dataset_name (keys %dataset_scored_pairs){
 		}
 	}
 	if (defined $pig{$dataset_name}){	
-		foreach my $goldstandard (keys %gold_standards_pig){
-			my ($goldstandard_filtered) = &filter_common_tissues($goldstandard_labels_pig, $common_tissues_hash{$dataset_name});
+		foreach my $goldstandard (keys $goldstandards{"pig"}){
+			my ($goldstandard_filtered) = &filter_common_tissues($goldstandard_labels{"pig"}{$goldstandard}, $common_tissues_hash{$dataset_name});
 			my $output_file = $data_dir."$dataset_name"."_$goldstandard"."_fold_enrichment_analysis.tsv";
 			my $output_file_full = $data_dir."$dataset_name"."_$goldstandard"."_fold_enrichment_analysis_full.tsv";		
 			my $output_file_roc = $data_dir."$dataset_name"."_$goldstandard"."_fold_enrichment_analysis_roc.tsv";
@@ -314,8 +319,7 @@ sub get_child_label(){
             $child_labels{$bto}{${$labels}{$bto}} =1;
         }
     }
-    
-    return \%child_labels;
+	return \%child_labels;
 }
 
 sub parse_studied_dataset_file(){
@@ -327,12 +331,12 @@ sub parse_studied_dataset_file(){
 		s/\r?\n//;
 		my (undef,$ensp,undef,$bto,$txt_aux,$score_scoretype,$stars,undef) = split("\t",$_);
 		my $score = $stars;
-		if($dataset_name !~ "tm"){
-	    		($score,undef) = split('\s',$score_scoretype);
-		}
-		elsif($dataset_name =~ /tm/){
+		if($dataset_name =~ /tm|mining/){
 	    		$score = $txt_aux;
 	    		$stars = $score_scoretype;
+		}
+		else{ 
+	    		($score,undef) = split('\s',$score_scoretype);
 		}
 		$dataset{$ensp}{$bto} = "$score\t$stars";         
     	}
@@ -343,63 +347,27 @@ sub parse_studied_dataset_file(){
 }
 
 sub parse_goldstandard_file(){
-    print "- Parsing the goldstandard files $goldstandard_file_human\n";
-    
-    open (GOLDH,"$goldstandard_file_human") or die "Unable to open the UniProt file $goldstandard_file_human\n";
-    open (GOLDM,"$goldstandard_file_mouse") or die "Unable to open the UniProt file $goldstandard_file_mouse\n";
-    open (GOLDR,"$goldstandard_file_rat") or die "Unable to open the UniProt file $goldstandard_file_rat\n";
-    open (GOLDP,"$goldstandard_file_pig") or die "Unable to open the UniProt file $goldstandard_file_pig\n";
-    
-    my %goldstandard_data_human = ();
-    my %gold_btos_human = (); 
-    
-    my %goldstandard_data_mouse = ();
-    my %gold_btos_mouse = (); 
-    
-    my %goldstandard_data_rat = ();
-    my %gold_btos_rat = (); 
-    
-    my %goldstandard_data_pig = ();
-    my %gold_btos_pig = (); 
+	my ($goldstandards) = $_[0];
+	my ($goldstandard_data) = $_[1];
+	my ($gold_btos) = $_[2];
    
-    while(<GOLDH>){
-	    s/\r?\n//;
-        my (undef,$ensp,undef,$bto,undef) = split("\t",$_);
-        $goldstandard_data_human{$ensp}{$bto} = 1;
-        $gold_btos_human{$bto} = 1;
-    }
-    print "- The human gold standard file has been parsed\n";
-	
-    while(<GOLDM>){
-	    s/\r?\n//;
-        my (undef,$ensp,undef,$bto,undef) = split("\t",$_);
-        $goldstandard_data_mouse{$ensp}{$bto} = 1;
-        $gold_btos_mouse{$bto} = 1;
-    }
-    print "- The mouse gold standard file has been parsed\n";
-
-    while(<GOLDR>){
-	    s/\r?\n//;
-        my (undef,$ensp,undef,$bto,undef) = split("\t",$_);
-        $goldstandard_data_rat{$ensp}{$bto} = 1;
-        $gold_btos_rat{$bto} = 1;
-    }
-    print "- The rat gold standard file has been parsed\n";
-
-    while(<GOLDP>){
-	s/\r?\n//;
-        my (undef,$ensp,undef,$bto,undef) = split("\t",$_);
-        $goldstandard_data_pig{$ensp}{$bto} = 1;
-        $gold_btos_pig{$bto} = 1;
-    }
-    print "- The pig gold standard file has been parsed\n";
-	close(GOLDH);
-	close(GOLDM);
-	close(GOLDR);
-	close(GOLDP);
-	
-    return \%goldstandard_data_human,\%gold_btos_human,\%goldstandard_data_mouse,\%gold_btos_mouse,\%goldstandard_data_rat,\%gold_btos_rat,\%goldstandard_data_pig,\%gold_btos_pig;
+    	foreach my $org (keys %{$goldstandards}){
+		foreach my $gold (keys %{${$goldstandards}{$org}}){
+			my $file = ${$goldstandards}{$org}{$gold};
+			print "- Parsing the goldstandard files $file\n";
+			open (IN, "$file") or die "Unable to open the UniProt file $file\n";
+			while(<IN>){
+				s/\r?\n//;
+				my (undef,$ensp,undef,$bto,undef) = split("\t",$_);
+        			${$goldstandard_data}{$org}{$gold}{$ensp}{$bto} = 1;
+     				${$gold_btos}{$org}{$gold}{$bto} = 1;
+			}
+    			print "- The gold standard file $file has been parsed\n";
+			close IN;
+		}	
+	}		
 }
+
 
 sub get_label_values(){
     	my ($dataset) = $_[0];
@@ -435,7 +403,7 @@ sub convert_btos_labels(){
     my ($btos_labels) = $_[1];
     my ($major_tissues) = $_[2];
     my ($dataset_name) = $_[3];
-
+    
     my %ensp_labels = ();
     my %labels = ();
     foreach my $ensp (keys %{$data}){

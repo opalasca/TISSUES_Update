@@ -140,15 +140,27 @@ min_val=0
 protein_tissues<-all_data
 
 #datasets by organism/technology  
-exon_data=NULL;gnf_data=NULL;mouse_gnf_data=NULL;mouse_gnfv3_data=NULL; rat_array_data=NULL; pig_array_data=NULL;rna_data=NULL;hparna_data=NULL;mouse_rnaseq_encode_data=NULL;mouse_rnaseq_mit_data=NULL; rat_rnaseq_bodymap_data=NULL; rat_rnaseq_mit_data=NULL; pig_rnaseq_aarhus_data=NULL; pig_rnaseq_wur_data=NULL
+exon_data=NULL;gnf_data=NULL;mouse_gnf_data=NULL;mouse_gnfv3_data=NULL; rat_array_data=NULL; pig_array_data=NULL;rna_data=NULL;hparna_data=NULL;mouse_rnaseq_encode_data=NULL;mouse_rnaseq_mit_data=NULL; rat_rnaseq_bodymap_data=NULL; rat_rnaseq_mit_data=NULL; pig_rnaseq_aarhus_data=NULL; pig_rnaseq_wur_data=NULL; human_text_mining_data=NULL; mouse_text_mining_data=NULL; rat_text_mining_data=NULL; pig_text_mining_data=NULL;
 datasets<-list(exon=exon_data,gnf=gnf_data,mouse_gnf=mouse_gnf_data,mouse_gnfv3=mouse_gnfv3_data, rat_array=rat_array_data, pig_array=pig_array_data,rna=rna_data,hparna=hparna_data,mouse_rnaseq_encode=mouse_rnaseq_encode_data,mouse_rnaseq_mit=mouse_rnaseq_mit_data, rat_rnaseq_bodymap=rat_rnaseq_bodymap_data, rat_rnaseq_mit=rat_rnaseq_mit_data, pig_rnaseq_aarhus=pig_rnaseq_aarhus_data, pig_rnaseq_wur=pig_rnaseq_wur_data)
-dataset_names<-list("exon","gnf","mouse_gnf","mouse_gnfv3","rat_array","pig_array","rna","hpa_rna","mouse_rnaseq_encode","mouse_rnaseq_mit","rat_rnaseq_bodymap","rat_rnaseq_mit", "pig_rnaseq_aarhus", "pig_rnaseq_wur")
+dataset_names<-list("exon","gnf","mouse_gnf","mouse_gnfv3","rat_array","pig_array","rna","hpa_rna","mouse_rnaseq_processed_rnaseq_encode_tpm","mouse_rnaseq_mit","rat_rnaseq_bodymap","rat_rnaseq_mit", "pig_rnaseq_aarhus", "pig_rnaseq_wur")
 names<-c("Human Exon Array","Human GNF","Mouse GNF","Mouse GNF V3", "Rat Array","Pig Array","Human RNA-seq atlas","Human HPA RNA-seq", "Mouse RNA-seq Encode", "Mouse RNA-seq MIT", "Rat RNA-seq BodyMap", "Rat RNA-seq MIT", "Pig RNA-seq Aarhus", "Pig RNA-seq WUR") 
 
-human<-list("exon","gnf","rna","hpa_rna")
-mouse<-list("mouse_gnf","mouse_gnfv3","mouse_rnaseq_encode","mouse_rnaseq_mit")
-rat<-list("rat_array","rat_rnaseq_bodymap","rat_rnaseq_mit")
-pig<-list("pig_array", "pig_rnaseq_aarhus", "pig_rnaseq_wur")
+tm_datasets<-list(human_text_mining=human_text_mining_data, mouse_text_mining=mouse_text_mining_data, rat_text_mining=rat_text_mining_data, pig_text_mining=pig_text_mining_data)
+tm_dataset_names<-list("human_text_mining", "mouse_text_mining", "rat_text_mining","pig_text_mining")
+tm_names<-c("Human Text Mining", "Mouse Text Mining","Rat Text Mining","Pig Text Mining")
+
+datasets_all<-append(datasets,tm_datasets)
+dataset_names_all<-append(dataset_names, tm_dataset_names)
+nnames_all<-append(names,tm_names)
+
+#datasets_all<-list(exon=exon_data,gnf=gnf_data,mouse_gnf=mouse_gnf_data,mouse_gnfv3=mouse_gnfv3_data, rat_array=rat_array_data, pig_array=pig_array_data,rna=rna_data,hparna=hparna_data,mouse_rnaseq_encode=mouse_rnaseq_encode_data,mouse_rnaseq_mit=mouse_rnaseq_mit_data, rat_rnaseq_bodymap=rat_rnaseq_bodymap_data, rat_rnaseq_mit=rat_rnaseq_mit_data, pig_rnaseq_aarhus=pig_rnaseq_aarhus_data, pig_rnaseq_wur=pig_rnaseq_wur_data,human_text_mining=human_text_mining_data, mouse_text_mining=mouse_text_mining_data, rat_text_mining=rat_text_mining_data, pig_text_mining=pig_text_mining_data)
+#dataset_names_all<-list("exon","gnf","mouse_gnf","mouse_gnfv3","rat_array","pig_array","rna","hpa_rna","mouse_rnaseq_encode","mouse_rnaseq_mit","rat_rnaseq_bodymap","rat_rnaseq_mit", "pig_rnaseq_aarhus", "pig_rnaseq_wur", "human_text_mining", "mouse_text_mining", "rat_text_mining","pig_text_mining")
+#names_all<-c("Human Exon Array","Human GNF","Mouse GNF","Mouse GNF V3", "Rat Array","Pig Array","Human RNA-seq atlas","Human HPA RNA-seq", "Mouse RNA-seq Encode", "Mouse RNA-seq MIT", "Rat RNA-seq BodyMap", "Rat RNA-seq MIT", "Pig RNA-seq Aarhus", "Pig RNA-seq WUR", "Human Text Mining", "Mouse Text Mining","Rat Text Mining","Pig Text Mining") 
+
+human<-list("exon","gnf","rna","hpa_rna","human_text_mining")
+mouse<-list("mouse_gnf","mouse_gnfv3","mouse_rnaseq_encode","mouse_rnaseq_processed_rnaseq_encode_tpm","mouse_rnaseq_mit","mouse_text_mining")
+rat<-list("rat_array","rat_rnaseq_bodymap","rat_rnaseq_mit","rat_text_mining")
+pig<-list("pig_array", "pig_rnaseq_aarhus", "pig_rnaseq_wur","pig_text_mining")
 
 ###############################################################################
 #         Correlation analysis taking proteins common to all datasets         #
@@ -197,11 +209,18 @@ dev.off()
 #         Correlation analysis taking proteins common between pairs of datasets         #
 ###############################################################################
 
-for (i in 1:length(datasets)){
+#for (i in 1:length(datasets_all)){
   #datasets[[i]]<-filter_dataset_tissue(protein_tissues,dataset_names[[i]],c(),not_in=TRUE,c(2,3,4,5,6,7,8,9))
+#  datasets_all[[i]]<-filter_dataset(protein_tissues,dataset_names_all[[i]])
+#}
+#p<-calc_correlation_common_btw_pairs(datasets_all, dataset_names_all, names_all,"","",500,500,3,10)
+
+
+for (i in 1:length(datasets)){
   datasets[[i]]<-filter_dataset(protein_tissues,dataset_names[[i]])
 }
 p<-calc_correlation_common_btw_pairs(datasets, dataset_names, names,"","",500,500,3,10)
+
 
 ###############################################################################
 #         Correlation across different tissues within and between datasets         #
