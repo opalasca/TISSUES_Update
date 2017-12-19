@@ -16,6 +16,7 @@ calc_correlation_common_btw_all <- function(datasets, names, common_proteins, co
       merged[is.na(merged)]<-0
       #cat(sprintf("%s-%s %f  ", (names(datasets))[i], (names(datasets))[j], dim(merged[])))
       pearson_matrix[i,j]<-calc_pairwise_corr(merged$stars.x, merged$stars.y)
+      cat(sprintf("%s-%s %f  ", (names(datasets))[i], (names(datasets))[j], pearson_matrix[i,j]))
     }
   }
   rownames(pearson_matrix)<-names
@@ -142,7 +143,7 @@ protein_tissues<-all_data
 #datasets by organism/technology  
 exon_data=NULL;gnf_data=NULL;mouse_gnf_data=NULL;mouse_gnfv3_data=NULL; rat_array_data=NULL; pig_array_data=NULL;rna_data=NULL;hparna_data=NULL;mouse_rnaseq_encode_data=NULL;mouse_rnaseq_mit_data=NULL; rat_rnaseq_bodymap_data=NULL; rat_rnaseq_mit_data=NULL; pig_rnaseq_aarhus_data=NULL; pig_rnaseq_wur_data=NULL; human_text_mining_data=NULL; mouse_text_mining_data=NULL; rat_text_mining_data=NULL; pig_text_mining_data=NULL;
 datasets<-list(exon=exon_data,gnf=gnf_data,mouse_gnf=mouse_gnf_data,mouse_gnfv3=mouse_gnfv3_data, rat_array=rat_array_data, pig_array=pig_array_data,rna=rna_data,hparna=hparna_data,mouse_rnaseq_encode=mouse_rnaseq_encode_data,mouse_rnaseq_mit=mouse_rnaseq_mit_data, rat_rnaseq_bodymap=rat_rnaseq_bodymap_data, rat_rnaseq_mit=rat_rnaseq_mit_data, pig_rnaseq_aarhus=pig_rnaseq_aarhus_data, pig_rnaseq_wur=pig_rnaseq_wur_data)
-dataset_names<-list("exon","gnf","mouse_gnf","mouse_gnfv3","rat_array","pig_array","rna","hpa_rna","mouse_rnaseq_processed_rnaseq_encode_tpm","mouse_rnaseq_mit","rat_rnaseq_bodymap","rat_rnaseq_mit", "pig_rnaseq_aarhus", "pig_rnaseq_wur")
+dataset_names<-list("exon","gnf","mouse_gnf","mouse_gnfv3","rat_array","pig_array","rna","hpa_rna","mouse_rnaseq_encode","mouse_rnaseq_mit","rat_rnaseq_bodymap","rat_rnaseq_mit", "pig_rnaseq_aarhus", "pig_rnaseq_wur")
 names<-c("Human Exon Array","Human GNF","Mouse GNF","Mouse GNF V3", "Rat Array","Pig Array","Human RNA-seq atlas","Human HPA RNA-seq", "Mouse RNA-seq Encode", "Mouse RNA-seq MIT", "Rat RNA-seq BodyMap", "Rat RNA-seq MIT", "Pig RNA-seq Aarhus", "Pig RNA-seq WUR") 
 
 tm_datasets<-list(human_text_mining=human_text_mining_data, mouse_text_mining=mouse_text_mining_data, rat_text_mining=rat_text_mining_data, pig_text_mining=pig_text_mining_data)

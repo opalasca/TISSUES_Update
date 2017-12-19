@@ -19,25 +19,28 @@ my $data1_human = "gnf";
 my $data2_human = "exon";
 my $data3_human = "hpa_rna";
 my $data4_human = "rna";
-my $data5_human = "tm";
+my $data5_human = "human_text_mining";
 
 my $data1_mouse = "mouse_gnf";
 my $data2_mouse = "mouse_gnfv3";
 my $data3_mouse = "mouse_rnaseq_encode";
 my $data4_mouse = "mouse_rnaseq_mit";
+my $data5_mouse = "mouse_text_mining";
 
 my $data1_rat = "rat_array";
 my $data2_rat = "rat_rnaseq_mit";
 my $data3_rat = "rat_rnaseq_bodymap";
+my $data4_rat = "rat_text_mining";
 
 my $data1_pig = "pig_array";
 my $data2_pig = "pig_rnaseq_aarhus";
 my $data3_pig = "pig_rnaseq_wur";
+my $data4_pig = "pig_text_mining";
 
 my %human_data = ($data1_human=> 1,$data2_human=> 1,$data3_human=> 1, $data4_human=> 1,$data5_human=> 1);
-my %mouse_data = ($data1_mouse => 1,$data2_mouse => 1,$data3_mouse => 1,$data4_mouse => 1);
-my %rat_data = ($data1_rat => 1,$data2_rat => 1,$data3_rat => 1);
-my %pig_data = ($data1_pig => 1,$data2_pig => 1,$data3_pig => 1);
+my %mouse_data = ($data1_mouse => 1,$data2_mouse => 1,$data3_mouse => 1,$data3_mouse_bis => 1, $data4_mouse => 1,$data5_mouse => 1);
+my %rat_data = ($data1_rat => 1,$data2_rat => 1,$data3_rat => 1,$data4_rat => 1);
+my %pig_data = ($data1_pig => 1,$data2_pig => 1,$data3_pig => 1,$data4_pig => 1);
 
 our %org1_org2 = ();
 our %org2_org1 = ();

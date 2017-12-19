@@ -9,7 +9,7 @@ DATA_DIR     = data/datasets
 
 all: generate_files generate_figures	
 
-# download the datasets from https://figshare.com/articles/datasets/4640734 and place them in the data/datasets folder
+# !!!Download the datasets from https://doi.org/10.6084/m9.figshare.5715880 and place them in the data/datasets folder
 
 #Generates all the files necessary for the analyses
 generate_files: 

@@ -38,7 +38,7 @@ Code to reproduce the fold enrichment analyses and figures from the article
             options(repos=r)})
      ```
 
-3. Download the datasets from from https://figshare.com/articles/datasets/4640734 and place them in the data/datasets folder 
+3. Download the datasets from https://doi.org/10.6084/m9.figshare.5715880 and place them in the data/datasets folder 
 4. Execute the makefile script from the command line:
   `> make`
 5. All the files will be generated in the data folder

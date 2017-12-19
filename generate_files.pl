@@ -11,20 +11,18 @@ use Data::Dumper;
 #Data directory
 my $data_dir = "data/";
 
-#Input files: these files need to be downloaded from FigShare (https://figshare.com/s/84433e3f30d7b120fc24)
+#Input files: these files need to be downloaded from FigShare (https://doi.org/10.6084/m9.figshare.5715880)
 # and stored in the data/datasets/ directory
 
 my $data1_human = "gnf";
 my $data2_human = "exon";
 my $data3_human = "hpa_rna";
 my $data4_human = "rna";
-my $data5_human = "tm";
-my $data6_human = "human_text_mining";
+my $data5_human = "human_text_mining";
 
 my $data1_mouse = "mouse_gnf";
 my $data2_mouse = "mouse_gnfv3";
 my $data3_mouse = "mouse_rnaseq_encode";
-my $data3_mouse_bis = "mouse_rnaseq_processed_rnaseq_encode_tpm";
 my $data4_mouse = "mouse_rnaseq_mit";
 my $data5_mouse = "mouse_text_mining";
 
@@ -42,12 +40,10 @@ my %options = ($data1_human => $data_dir."datasets/".$data1_human.".tsv",
 		$data2_human => $data_dir."datasets/".$data2_human.".tsv",
 		$data3_human => $data_dir."datasets/".$data3_human.".tsv",
 		$data4_human => $data_dir."datasets/rna_seq.tsv",
-		$data5_human => $data_dir."datasets/text_mining.tsv",
-		$data6_human => $data_dir."datasets/".$data6_human.".tsv",
+		$data5_human => $data_dir."datasets/".$data5_human.".tsv",
 		$data1_mouse => $data_dir."datasets/".$data1_mouse.".tsv",
 		$data2_mouse => $data_dir."datasets/".$data2_mouse.".tsv",
 		$data3_mouse => $data_dir."datasets/".$data3_mouse.".tsv",
-		$data3_mouse_bis => $data_dir."datasets/".$data3_mouse_bis.".tsv",
 		$data4_mouse => $data_dir."datasets/".$data4_mouse.".tsv",
 		$data5_mouse => $data_dir."datasets/".$data5_mouse.".tsv",
 		$data1_rat => $data_dir."datasets/".$data1_rat.".tsv",
@@ -60,8 +56,8 @@ my %options = ($data1_human => $data_dir."datasets/".$data1_human.".tsv",
 		$data4_pig => $data_dir."datasets/".$data4_pig.".tsv"
 	);
 
-my %human = ($data1_human=> 1,$data2_human=> 1,$data3_human=> 1, $data4_human=> 1,$data5_human=> 1,$data6_human=> 1);
-my %mouse = ($data1_mouse => 1,$data2_mouse => 1,$data3_mouse => 1,$data3_mouse_bis => 1,$data4_mouse => 1,$data5_mouse => 1);
+my %human = ($data1_human=> 1,$data2_human=> 1,$data3_human=> 1, $data4_human=> 1,$data5_human=> 1);
+my %mouse = ($data1_mouse => 1,$data2_mouse => 1,$data3_mouse => 1,$data4_mouse => 1,$data5_mouse => 1);
 my %rat = ($data1_rat => 1,$data2_rat => 1,$data3_rat => 1,$data4_rat => 1);
 my %pig = ($data1_pig => 1,$data2_pig => 1,$data3_pig => 1,$data4_pig => 1 );
 
@@ -82,11 +78,9 @@ my %common_tissues_hash = ($data1_human => \%common_tissues_1,
 		$data3_human => \%common_tissues_1,
 		$data4_human => \%common_tissues_1,
 		$data5_human => \%common_tissues_1,
-		$data6_human => \%common_tissues_1,
 		$data1_mouse => \%common_tissues_1,
 		$data2_mouse => \%common_tissues_1,
 		$data3_mouse => \%common_tissues_1,
-		$data3_mouse_bis => \%common_tissues_1,
 		$data4_mouse => \%common_tissues_1,
 		$data5_mouse => \%common_tissues_1,
 		$data1_rat => \%common_tissues_3,

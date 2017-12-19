@@ -57,21 +57,37 @@ get_upper_tri <- function(cormat){
   return(cormat)
 }
 
+reorder_cormat <- function(mat){
+  # Use correlation between variables as distance
+  dd <- as.dist(1-mat)
+  hc <- hclust(dd)
+  mat <-mat[hc$order, hc$order]
+  return(mat)
+}
+
 #adapted from http://www.sthda.com/english/wiki/ggplot2-quick-correlation-matrix-heatmap-r-software-and-data-visualization
 draw_heatmap<-function(mat_data,title,output_file,min_val,w,h,bw,bh){
-  #h=1000;w=1000
   if (min_val<0){
     col=c("blue4","whitesmoke","brown3")
+    #upper=2
+    low=-1
+    print("min_val < 0!!! ")
   }
   else{
     col=c("whitesmoke","brown3")
+    #upper=1
+    #low=0
   } 
+ #mat_data<-1-mat_data
+ #mat_data<-reorder_cormat(mat_data)
+   #h=1000;w=1000
+  
   upper_tri <- get_upper_tri(mat_data)
   melted_mat_data<-melt(upper_tri,na.rm=TRUE)
-  low<-min(melted_mat_data[,3])
-  print(low)
+  #low<-min(melted_mat_data[,3])
+  #print(low)
   #if (min_val!=0){
-    low=min_val
+  low=min_val
   #} 
   mid<-low+(1-low)/2
   plot <- ggplot(melted_mat_data, aes(Var1,ordered(Var2,levels=rev(sort(unique(Var2)))))) +   
