@@ -38,7 +38,7 @@ my $data3_pig = "pig_rnaseq_wur";
 my $data4_pig = "pig_text_mining";
 
 my %human_data = ($data1_human=> 1,$data2_human=> 1,$data3_human=> 1, $data4_human=> 1,$data5_human=> 1);
-my %mouse_data = ($data1_mouse => 1,$data2_mouse => 1,$data3_mouse => 1,$data3_mouse_bis => 1, $data4_mouse => 1,$data5_mouse => 1);
+my %mouse_data = ($data1_mouse => 1,$data2_mouse => 1,$data3_mouse => 1, $data4_mouse => 1,$data5_mouse => 1);
 my %rat_data = ($data1_rat => 1,$data2_rat => 1,$data3_rat => 1,$data4_rat => 1);
 my %pig_data = ($data1_pig => 1,$data2_pig => 1,$data3_pig => 1,$data4_pig => 1);
 
